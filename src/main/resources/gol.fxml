@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import net.arkaine.game.component.*?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<GridPane alignment="center" hgap="10" minHeight="200.0" minWidth="400.0" prefHeight="-Infinity" prefWidth="-Infinity" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.arkaine.game.ControllerGol">
+   <children>
+       <GameCanvas fx:id="gameofLife" onMouseClicked="#clickCanvas" pickOnBounds="true" BorderPane.alignment="TOP_LEFT" GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.rowSpan="1" GridPane.valignment="CENTER" />
+       <Label fx:id="launchLbl" text="Launch" GridPane.columnIndex="1" GridPane.columnSpan="1" GridPane.rowIndex="0" GridPane.rowSpan="1" />
+       <Button fx:id="playBtn" ellipsisString="Play" mnemonicParsing="false" onAction="#playAction" text="" GridPane.columnIndex="2" GridPane.columnSpan="1" GridPane.rowIndex="0" GridPane.rowSpan="1" >
+           <graphic>
+               <ImageView fx:id="playImg" visible="true" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                   <image>
+                       <Image url="images/play.png" />
+                   </image>
+               </ImageView>
+           </graphic>
+       </Button>
+
+       <Button fx:id="stopBtn" ellipsisString="Stop" mnemonicParsing="false" onAction="#stopAction" text="" GridPane.columnIndex="1" GridPane.columnSpan="1" GridPane.rowIndex="1" GridPane.rowSpan="1" >
+           <graphic>
+               <ImageView fx:id="stopImg" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" visible="true" GridPane.rowIndex="1">
+                   <image>
+                       <Image url="images/stop.png" />
+                   </image>
+               </ImageView>
+           </graphic>
+       </Button>
+
+       <ImageView fx:id="pauseImg" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.rowIndex="1">
+                       <image>
+                           <Image url="images/pause.png" />
+                       </image>
+       </ImageView>
+       <ChoiceBox prefWidth="150.0" GridPane.rowIndex="2" GridPane.columnIndex="0" >
+           <style></style>
+           <items>
+               <FXCollections fx:factory="observableArrayList">
+                   <String fx:value="WHITE" />
+                   <String fx:value="BLUE" />
+                   <String fx:value="PURPLE" />
+                   <String fx:value="GREEN" />
+                   <String fx:value="YELLOW" />
+                   <String fx:value="ORANGE" />
+                   <String fx:value="RED" />
+                   <String fx:value="BLACK" />
+               </FXCollections>
+           </items>
+       </ChoiceBox>
+
+
+    </children>
+    <columnConstraints>
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="500.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+</GridPane>
