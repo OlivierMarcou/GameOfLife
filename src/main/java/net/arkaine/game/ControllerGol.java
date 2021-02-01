@@ -166,7 +166,6 @@ public class ControllerGol {
 
     @FXML
     public void drawCanvas(MouseEvent mouseEvent) {
-        System.out.println(mouseEvent.isPrimaryButtonDown());
         if(drawing && mouseEvent.isPrimaryButtonDown()) {
             int x = (int)Math.round(mouseEvent.getX());
             int y = (int)Math.round(mouseEvent.getY());
