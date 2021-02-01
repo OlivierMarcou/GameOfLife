@@ -4,12 +4,10 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -19,7 +17,6 @@ import net.arkaine.game.component.ColorStatus;
 import net.arkaine.game.component.GameCanvas;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -39,6 +36,12 @@ public class ControllerGol {
 
     @FXML
     private ImageView playImg;
+
+    @FXML
+    private ImageView drawImg;
+
+    @FXML
+    private ImageView stopDrawImg;
 
     @FXML
     private Button playBtn;
@@ -97,16 +100,6 @@ public class ControllerGol {
     public ControllerGol(){
         th.setDaemon(true);
         th.start();
-    }
-
-    @FXML
-    public void clickCanvas(MouseEvent mouseEvent) {
-        int x = (int)Math.round(mouseEvent.getX());
-        int y = (int)Math.round(mouseEvent.getY());
-        Color selectedColor = Color.BLUE;
-        if(colorComboBox.getSelectionModel().getSelectedItem() != null)
-            selectedColor = ColorStatus.valueOf(colorComboBox.getSelectionModel().getSelectedItem()).getColor();
-        gameofLife.getGraphicsContext2D().getPixelWriter().setColor(x, y, selectedColor);
     }
 
     @FXML
@@ -169,4 +162,31 @@ public class ControllerGol {
     @FXML
     private Slider speedSld;
 
+    private boolean drawing = true;
+
+    @FXML
+    public void drawCanvas(MouseEvent mouseEvent) {
+        System.out.println(mouseEvent.isPrimaryButtonDown());
+        if(drawing && mouseEvent.isPrimaryButtonDown()) {
+            int x = (int)Math.round(mouseEvent.getX());
+            int y = (int)Math.round(mouseEvent.getY());
+            Color selectedColor = Color.BLUE;
+            if(colorComboBox.getSelectionModel().getSelectedItem() != null)
+                selectedColor = ColorStatus.valueOf(colorComboBox.getSelectionModel().getSelectedItem()).getColor();
+            gameofLife.getGraphicsContext2D().getPixelWriter().setColor(x, y, selectedColor);
+        }
+    }
+
+    @FXML
+    private Button drawBtn;
+    public void switchDrawAction(ActionEvent actionEvent) {
+        drawing = !drawing;
+        if(drawing){
+            drawBtn.setGraphic(drawImg);
+        }else{
+            if(!stopDrawImg.isVisible())stopDrawImg.setVisible(true);
+            drawBtn.setGraphic(stopDrawImg);
+        }
+        actionEvent.consume();
+    }
 }
