@@ -45,13 +45,11 @@ public class ControllerGol {
             if(!pauseImg.isVisible())pauseImg.setVisible(true);
             playBtn.setGraphic(pauseImg);
             isPlay = true;
-
-            th.start();
         }
         event.consume();
     }
 
-    Task<Integer> task = new Task<Integer>() {
+    private Task<Integer> task = new Task<Integer>() {
         @Override
         protected Integer call() throws Exception {
             int i;
@@ -60,22 +58,19 @@ public class ControllerGol {
                     Thread.sleep(500);
                 } catch (InterruptedException ie) {
                 }
-
                 // Update the GUI on the JavaFX Application Thread
                 Platform.runLater(new Runnable() {
-
                     @Override
                     public void run() {
                         if(ControllerGol.this.isPlay)
                             gameofLife.updateGame();
                     }
                 });
-
             }
         }
     };
 
-    Thread th = new Thread(task);
+    private Thread th = new Thread(task);
 
     @FXML
     private void stopAction(ActionEvent event) {
@@ -88,6 +83,7 @@ public class ControllerGol {
 
     public ControllerGol(){
         gameThread.setGameCanvas(gameofLife);
+        th.start();
     }
 
     @FXML

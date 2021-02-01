@@ -16,17 +16,15 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         URL url = getClass().getResource("/gol.fxml");
         FXMLLoader fxmlLoader = new FXMLLoader(url);
-      //  fxmlLoader.setResources(ResourceBundle.getBundle("messages", Locale.getDefault()));
         Parent mainParent = fxmlLoader.load();
-
-        primaryStage.setTitle("Assistant de réponse à une procédure");
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Game Of Life - with pressure and colors !");
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int width = gd.getDisplayMode().getWidth()-20;
         int height = gd.getDisplayMode().getHeight()-120;
         primaryStage.setScene(new Scene(mainParent, width, height));
         primaryStage.show();
     }
+
     public static void main(String[] args) {
 
         launch(args);

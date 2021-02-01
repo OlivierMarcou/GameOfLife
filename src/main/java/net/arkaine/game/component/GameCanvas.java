@@ -29,7 +29,6 @@ public class GameCanvas extends Canvas {
     private GraphicsContext gc = getGraphicsContext2D();
 
     public GameCanvas(){
-        super();
         init();
     }
 
