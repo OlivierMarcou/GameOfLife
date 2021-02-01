@@ -7,11 +7,12 @@
 
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
+<?import javafx.scene.paint.Color?>
 <GridPane alignment="center" hgap="10" minHeight="400.0" minWidth="400.0" prefHeight="-Infinity" prefWidth="-Infinity" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.arkaine.game.ControllerGol">
    <children>
        <GameCanvas fx:id="gameofLife" onMouseClicked="#clickCanvas" pickOnBounds="true" BorderPane.alignment="CENTER"
+                   GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.rowSpan="4" GridPane.valignment="CENTER" />
 
-                   GridPane.columnIndex="0" GridPane.columnSpan="1" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.rowSpan="2" GridPane.valignment="CENTER" />
        <Button fx:id="playBtn" ellipsisString="Play" mnemonicParsing="false" onAction="#playAction" text=""
                GridPane.columnIndex="1" GridPane.columnSpan="1" GridPane.rowIndex="0" GridPane.rowSpan="1" >
            <graphic>
@@ -39,11 +40,11 @@
                <Image url="images/pause.png" />
            </image>
        </ImageView>
-       <ChoiceBox prefWidth="150.0" GridPane.rowIndex="1" GridPane.columnIndex="1" fx:id="colorSelector">
+       <ComboBox prefWidth="150.0" GridPane.rowIndex="2" GridPane.columnIndex="1" fx:id="colorComboBox" >
            <style></style>
            <items>
                <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="WHITE" />
+                   <String fx:value="WHITE"/>
                    <String fx:value="BLUE" />
                    <String fx:value="PURPLE" />
                    <String fx:value="GREEN" />
@@ -53,9 +54,40 @@
                    <String fx:value="BLACK" />
                </FXCollections>
            </items>
-       </ChoiceBox>
+           <value>
+               <String fx:value="BLUE" />
+           </value>
+       </ComboBox>
+
+       <Button fx:id="clearBtn" ellipsisString="Stop" mnemonicParsing="false" onAction="#clearAction" text="CLEAR"
+               GridPane.columnIndex="2" GridPane.columnSpan="1" GridPane.rowIndex="2" GridPane.rowSpan="1" >
+           <style>
+               -fx-text-fill: #ffffff;
+               -fx-background-color: #000000;
+           </style>
+       </Button>
 
 
+       <Button fx:id="saveBtn" ellipsisString="Stop" mnemonicParsing="false" onAction="#saveAction" text="SAVE"
+               GridPane.columnIndex="1" GridPane.columnSpan="1" GridPane.rowIndex="3" GridPane.rowSpan="1" >
+           <style>
+               -fx-text-fill: #ffffff;
+               -fx-background-color: #008800;
+           </style>
+       </Button>
+       <Button fx:id="loadBtn" ellipsisString="Stop" mnemonicParsing="false" onAction="#loadAction" text="LOAD"
+               GridPane.columnIndex="2" GridPane.columnSpan="1" GridPane.rowIndex="3" GridPane.rowSpan="1" >
+           <style>
+               -fx-text-fill: #ffffff;
+               -fx-background-color: #000088;
+           </style>
+       </Button>
+
+       <Slider fx:id="speedSld"
+               GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.rowSpan="1" value="500" >
+<min>50</min>
+           <max>5000</max>
+       </Slider>
     </children>
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="400.0" prefWidth="500.0" />
@@ -64,6 +96,8 @@
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="200.0" prefHeight="200.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
 </GridPane>

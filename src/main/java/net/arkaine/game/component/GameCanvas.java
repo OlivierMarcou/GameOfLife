@@ -1,30 +1,44 @@
 package net.arkaine.game.component;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-import net.arkaine.game.thread.GameThread;
 
 public class GameCanvas extends Canvas {
 
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
     private int x = 200;
     private int y = 200;
-    int maxValue = 7;
-    int scale = 4;
-    private GameThread gameThread = new GameThread();
+    private int maxValue = 7;
 
-    public boolean isDontStop() {
-        return gameThread.isDontStop();
+    public int getScale() {
+        return scale;
     }
 
-    public void setDontStop(boolean dontStop) {
-        gameThread.setDontStop(dontStop);
+    public void setScale(int scale) {
+        this.scale = scale;
     }
+
+    private int scale = 4;
+    private int age = 0;
 
     private GraphicsContext gc = getGraphicsContext2D();
 
@@ -43,6 +57,17 @@ public class GameCanvas extends Canvas {
         setScaleY(scale);
     }
 
+    public void clear() {
+        PixelWriter px = gc.getPixelWriter();
+        setHeight(x);
+        setWidth(y);
+        for(int xx= 0 ; xx<x ; xx++)
+            for(int yy= 0 ; yy<y ; yy++)
+                px.setColor( xx, yy, Color.WHITE);
+        setScaleX(scale);
+        setScaleY(scale);
+    }
+
     private Color getRandomColor() {
 
         int percent = (int) Math.round(Math.random()*(6));
@@ -54,6 +79,7 @@ public class GameCanvas extends Canvas {
 
 
     public void updateGame(){
+        age++;
         setScaleX(1);
         setScaleY(1);
         SnapshotParameters params = new SnapshotParameters();

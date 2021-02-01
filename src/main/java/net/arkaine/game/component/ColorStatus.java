@@ -3,7 +3,6 @@ package net.arkaine.game.component;
 import javafx.scene.paint.Color;
 
 import java.util.EnumSet;
-import java.util.Optional;
 
 public enum ColorStatus {
 
