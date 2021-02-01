@@ -29,6 +29,7 @@
             <artifactId>javafx-fxml</artifactId>
             <version>15.0.1</version>
         </dependency>
+
     </dependencies>
     <build>
         <resources>
@@ -65,35 +66,35 @@
                     <timestampFormat>{0,date,yyyy-MM-dd HH:mm:ss}</timestampFormat>
                 </configuration>
             </plugin>
-<!--			<plugin>-->
-<!--				<groupId>org.apache.maven.plugins</groupId>-->
-<!--				<artifactId>maven-shade-plugin</artifactId>-->
-<!--				<configuration>-->
-<!--					<minimizeJar>true</minimizeJar>-->
-<!--                    <filters>-->
-<!--                        <filter>-->
-<!--                            <artifact>*:*</artifact>-->
-<!--                            <includes>-->
-<!--                                <include>**</include>-->
-<!--                            </includes>-->
-<!--                            <excludes>-->
-<!--                                <exclude>META-INF/*.SF</exclude>-->
-<!--                                <exclude>META-INF/*.DSA</exclude>-->
-<!--                                <exclude>META-INF/*.RSA</exclude>-->
-<!--                            </excludes>-->
-<!--                        </filter>-->
-<!--                    </filters>-->
-<!--				</configuration>-->
-<!--                <version>2.4.3</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <phase>package</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>shade</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--			</plugin>-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<configuration>
+					<minimizeJar>true</minimizeJar>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+				</configuration>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
