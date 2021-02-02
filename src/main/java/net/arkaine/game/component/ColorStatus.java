@@ -31,21 +31,21 @@ public enum ColorStatus {
     public Color getColor() {
         switch (value){
             case 0 :
-            return Color.WHITE;
+                return Color.WHITE;
             case 1 :
-            return Color.BLUE;
+                return Color.BLUE;
             case 2 :
-            return Color.PURPLE;
+                return Color.PURPLE;
             case 3 :
-            return Color.GREEN;
+                return Color.GREEN;
             case 4 :
-            return Color.YELLOW;
+                return Color.YELLOW;
             case 5 :
-            return Color.ORANGE;
+                return Color.ORANGE;
             case 6 :
-            return Color.RED;
+                return Color.RED;
             case 7 :
-            return Color.BLACK;
+                return Color.BLACK;
         }
         return Color.WHITE;
     }

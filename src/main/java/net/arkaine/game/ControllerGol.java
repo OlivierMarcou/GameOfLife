@@ -74,7 +74,6 @@ public class ControllerGol {
                     Thread.sleep(speed);
                 } catch (InterruptedException ie) {
                 }
-                // Update the GUI on the JavaFX Application Thread
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
