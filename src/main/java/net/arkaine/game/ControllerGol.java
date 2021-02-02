@@ -196,11 +196,11 @@ public class ControllerGol {
     public void switchOriAction(ActionEvent actionEvent) {
         if(gameofLife.isOriginal()){
             gameofLife.setOriginal(false);
-            gameofLife.setMaxValue(1);
+            gameofLife.setMaxValue(7);
             oriBtn.setText("EXTEND");
         }else{
             gameofLife.setOriginal(true);
-            gameofLife.setMaxValue(7);
+            gameofLife.setMaxValue(1);
             oriBtn.setText("ORIGINAL");
 
         }
