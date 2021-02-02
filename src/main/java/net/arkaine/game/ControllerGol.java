@@ -116,30 +116,32 @@ public class ControllerGol {
 
     @FXML
     private void saveAction(ActionEvent event) {
-            FileChooser fileChooser = new FileChooser();
-            FileChooser.ExtensionFilter extFilter =
-                    new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
-            fileChooser.getExtensionFilters().add(extFilter);
-            File file = fileChooser.showSaveDialog(null);
-            if(file != null){
-                try {
-                    gameofLife.setScaleX(1);
-                    gameofLife.setScaleY(1);
-                    WritableImage writableImage = new WritableImage(gameofLife.getX(), gameofLife.getY());
-                    gameofLife.snapshot(null, writableImage);
-                    RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
-                    ImageIO.write(renderedImage, "png", file);
-                } catch (IOException ex) {
-                    Logger.getLogger(ControllerGol.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                gameofLife.setScaleX(gameofLife.getScale());
-                gameofLife.setScaleY(gameofLife.getScale());
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        FileChooser.ExtensionFilter extFilter =
+                new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File file = fileChooser.showSaveDialog(null);
+        if(file != null){
+            try {
+                gameofLife.setScaleX(1);
+                gameofLife.setScaleY(1);
+                WritableImage writableImage = new WritableImage(gameofLife.getX(), gameofLife.getY());
+                gameofLife.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                ImageIO.write(renderedImage, "png", file);
+            } catch (IOException ex) {
+                Logger.getLogger(ControllerGol.class.getName()).log(Level.SEVERE, null, ex);
             }
+            gameofLife.setScaleX(gameofLife.getScale());
+            gameofLife.setScaleY(gameofLife.getScale());
         }
+    }
 
     @FXML
     private void loadAction(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         FileChooser.ExtensionFilter extFilter =
                 new FileChooser.ExtensionFilter("png files (*.png)", "*.png");
         fileChooser.getExtensionFilters().add(extFilter);
@@ -187,5 +189,20 @@ public class ControllerGol {
             drawBtn.setGraphic(stopDrawImg);
         }
         actionEvent.consume();
+    }
+
+    @FXML
+    private Button oriBtn;
+    public void switchOriAction(ActionEvent actionEvent) {
+        if(gameofLife.isOriginal()){
+            gameofLife.setOriginal(false);
+            gameofLife.setMaxValue(1);
+            oriBtn.setText("EXTEND");
+        }else{
+            gameofLife.setOriginal(true);
+            gameofLife.setMaxValue(7);
+            oriBtn.setText("ORIGINAL");
+
+        }
     }
 }

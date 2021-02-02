@@ -25,10 +25,29 @@ public class GameCanvas extends Canvas {
         this.y = y;
     }
 
+    private boolean isOriginal = false;
     private int x = 200;
     private int y = 200;
+
+    public boolean isOriginal() {
+        return isOriginal;
+    }
+
+    public void setOriginal(boolean original) {
+        isOriginal = original;
+    }
+
+    public int getMaxValue() {
+        return maxValue;
+    }
+
+    public void setMaxValue(int maxValue) {
+        this.maxValue = maxValue;
+    }
+
     private int maxValue = 7;
 
+    private int scale = 4;
     public int getScale() {
         return scale;
     }
@@ -37,7 +56,6 @@ public class GameCanvas extends Canvas {
         this.scale = scale;
     }
 
-    private int scale = 4;
     private int age = 0;
 
     private GraphicsContext gc = getGraphicsContext2D();
@@ -69,14 +87,12 @@ public class GameCanvas extends Canvas {
     }
 
     private Color getRandomColor() {
-
         int percent = (int) Math.round(Math.random()*(6));
         int value = 0;
         if(percent == 0 )
             value = (int) Math.round(Math.random()*(maxValue));
         return ColorStatus.getColorStatusByValue(value).getColor();
     }
-
 
     public void updateGame(){
         age++;
@@ -117,8 +133,8 @@ public class GameCanvas extends Canvas {
                 neighbours = getNeighbourValue(snp, neighbours, xp1, yp1);
 
                 int cellule =  ColorStatus.getColorValue(snp.getPixelReader().getColor(xx, yy));
-                if(neighbours == 8){
-                 //   if(cellule == maxValue)
+
+                if(neighbours == 8 && !isOriginal){
                         cellule = 1;
                     ColorStatus colorStatusTmp = ColorStatus.getColorStatusByValue(cellule);
                     px.setColor( xx, yy, colorStatusTmp.getColor());
