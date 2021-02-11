@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import net.arkaine.game.component.ColorStatus;
 import net.arkaine.game.component.GameCanvas;
+import net.arkaine.game.component.GameMode;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -194,15 +195,14 @@ public class ControllerGol {
     @FXML
     private Button oriBtn;
     public void switchOriAction(ActionEvent actionEvent) {
-        if(gameofLife.isOriginal()){
-            gameofLife.setOriginal(false);
-            gameofLife.setMaxValue(7);
-            oriBtn.setText("EXTEND");
-        }else{
-            gameofLife.setOriginal(true);
+        int gameMode = gameofLife.getMode().getValue();
+        gameMode++;
+        gameofLife.setMode(GameMode.getGameMode(gameMode));
+        if(gameofLife.getMode() == GameMode.ORIGINAL)
             gameofLife.setMaxValue(1);
-            oriBtn.setText("ORIGINAL");
+        else
+            gameofLife.setMaxValue(7);
 
-        }
+        oriBtn.setText(gameofLife.getMode().name());
     }
 }
