@@ -105,8 +105,8 @@ public class GameCanvas extends Canvas {
         SnapshotParameters params = new SnapshotParameters();
         WritableImage snp = this.snapshot(params, null);
         PixelWriter px = gc.getPixelWriter();
-        for(int xx= 0 ; xx<x ; xx++)
-            for(int yy= 0 ; yy<y ; yy++)
+        for(int yy= 0 ; yy<y ; yy++)
+            for(int xx= 0 ; xx<x ; xx++)
             {
                 Integer neighbours = 0;
                 int xm1 = xx-1;
@@ -191,8 +191,8 @@ public class GameCanvas extends Canvas {
         setScaleY(scale);
     }
 
-    private int getNeighbourValue(WritableImage snp, int neighbours, int xm1, int ym1, int activeColor, boolean isShot, int xx , int yy) {
-        Color color = snp.getPixelReader().getColor(xm1, ym1);
+    private int getNeighbourValue(WritableImage snp, int neighbours, int xm, int ym, int activeColor, boolean isShot, int xx , int yy) {
+        Color color = snp.getPixelReader().getColor(xm, ym);
         int neighbour = ColorStatus.getColorValue(color);
         if(mode == GameMode.EXTEND)
             switch (activeColor){
@@ -208,7 +208,7 @@ public class GameCanvas extends Canvas {
                     {
                         neighbour = 0;
                         activeColor = 3;
-                        snp.getPixelWriter().setColor(xm1, ym1, Color.WHITE);
+                        snp.getPixelWriter().setColor(xm, ym, Color.WHITE);
                         snp.getPixelWriter().setColor(xx, yy, Color.GREEN);
                     }
                     break;
@@ -216,7 +216,7 @@ public class GameCanvas extends Canvas {
                     if(neighbour<3 && neighbour > 0) {
                         neighbour = 0;
                         activeColor = 4;
-                        snp.getPixelWriter().setColor(xm1, ym1, Color.WHITE);
+                        snp.getPixelWriter().setColor(xm, ym, Color.WHITE);
                         snp.getPixelWriter().setColor(xx, yy, Color.YELLOW);
                     }
                     break;
@@ -224,14 +224,14 @@ public class GameCanvas extends Canvas {
                     if(neighbour >0 && neighbour<4) {
                         neighbour = 4;
                         activeColor = 5;
-                        snp.getPixelWriter().setColor(xm1, ym1, Color.RED);
+                        snp.getPixelWriter().setColor(xm, ym, Color.RED);
                     }
                     break;
                 case(5): //ORANGE
                     if(neighbour >0 && neighbour<6 ) {
                         neighbour = 6;
                         activeColor = 7;
-                        snp.getPixelWriter().setColor(xm1, ym1, Color.RED);
+                        snp.getPixelWriter().setColor(xm, ym, Color.RED);
                         snp.getPixelWriter().setColor(xx, yy, Color.BLACK);
                     }
                     break;
@@ -239,7 +239,7 @@ public class GameCanvas extends Canvas {
                     if(neighbour >0 && neighbour<7 ) { //RED Burn
                         activeColor = 7;
                         neighbour = 0;
-                        snp.getPixelWriter().setColor(xm1, ym1, Color.BLACK);
+                        snp.getPixelWriter().setColor(xm, ym, Color.BLACK);
                         snp.getPixelWriter().setColor(xx, yy, Color.WHITE);
                     }
                     break;
