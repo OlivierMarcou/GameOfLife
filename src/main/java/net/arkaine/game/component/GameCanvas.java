@@ -146,7 +146,7 @@ public class GameCanvas extends Canvas {
 //                }
 
                 if(neighbours == 3){ // create cellule
-                    if(mode == GameMode.BURN_PAPER){
+                    if(mode == GameMode.BURN_PAPER || mode == GameMode.NUKLEAR_BURN){
                         cellule = maxValue;
                     }else{
                         cellule = 1;
@@ -168,7 +168,11 @@ public class GameCanvas extends Canvas {
                     ColorStatus colorStatusTmp = ColorStatus.getColorStatusByValue(cellule);
                     px.setColor( xx, yy, colorStatusTmp.getColor());
                 }
-                if(neighbours == 8 && cellule > 0 && !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)){ // explosion
+                // explosion
+                int stressExplosion = 8;
+                if (mode.equals(GameMode.NUKLEAR_BURN))
+                    stressExplosion = 7;
+                if(neighbours == stressExplosion && cellule > 0 && !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)){
                     if(mode.equals(GameMode.COLOR))
                         cellule = 0 ;
                     else
@@ -185,7 +189,6 @@ public class GameCanvas extends Canvas {
                     px.setColor(xp1, yp1, Color.RED);
                     px.setColor( xx, yy, Color.WHITE);
                 }
-
             }
         setScaleX(scale);
         setScaleY(scale);

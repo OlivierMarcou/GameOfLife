@@ -6,7 +6,7 @@ import java.util.EnumSet;
 
 public enum GameMode {
 
-    ORIGINAL(1), BURN_PAPER (2), COLOR (3) , EXTEND ( 4) ;
+    ORIGINAL(1), BURN_PAPER (2), COLOR (3) , EXTEND ( 4), NUKLEAR_BURN (5) ;
     private int value;
 
     GameMode(int value) {

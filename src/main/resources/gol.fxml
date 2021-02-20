@@ -117,7 +117,7 @@
            </image>
        </ImageView>
 
-       <Button fx:id="oriBtn" ellipsisString="Stop" mnemonicParsing="false" onAction="#switchOriAction" text="EXTEND"
+       <Button fx:id="oriBtn" ellipsisString="Stop" mnemonicParsing="false" onAction="#switchOriAction" text="ORIGINAL"
                GridPane.columnIndex="2" GridPane.columnSpan="1" GridPane.rowIndex="4" GridPane.rowSpan="1" >
            <style>
                -fx-text-fill: #FF5555;
