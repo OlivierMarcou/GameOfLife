@@ -39,17 +39,17 @@ public class GameCanvas extends Canvas {
     private int y = 200;
 
 
-    public int getMaxValue() {
+    public Double getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(int maxValue) {
+    public void setMaxValue(Double maxValue) {
         this.maxValue = maxValue;
     }
 
-    private int maxValue = 7;
+    private Double maxValue = 1.0;
 
-    private int scale = 4;
+    private int scale = 2;
     public int getScale() {
         return scale;
     }
@@ -91,11 +91,7 @@ public class GameCanvas extends Canvas {
     }
 
     private Color getRandomColor() {
-        int percent = (int) Math.round(Math.random()*(6));
-        int value = 0;
-        if(percent == 0 )
-            value = (int) Math.round(Math.random()*(maxValue));
-        return ColorStatus.getColorStatusByValue(value).getColor();
+        return new Color((Math.random()*(1)),(Math.random()*(1)),(Math.random()*(1)),1.0);
     }
 
     public void updateGame(){
@@ -125,17 +121,17 @@ public class GameCanvas extends Canvas {
                 if(yp1 >= y)
                     yp1 = 0;
                 boolean isShot = false;
-                int cellule =  ColorStatus.getColorValue(snp.getPixelReader().getColor(xx, yy));
-                neighbours = getNeighbourValue(snp, neighbours, xm1, ym1, cellule, isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xx, ym1, cellule, isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, ym1, cellule, isShot, xx, yy);
+                Double cellule =  (snp.getPixelReader().getColor(xx, yy).getRed());
+                neighbours = getNeighbourValue(snp, neighbours, xm1, ym1,  isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xx, ym1,  isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xp1, ym1,  isShot, xx, yy);
 
-                neighbours = getNeighbourValue(snp, neighbours, xm1, yy, cellule, isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, yy, cellule, isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xm1, yy,  isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xp1, yy,  isShot, xx, yy);
 
-                neighbours = getNeighbourValue(snp, neighbours, xm1, yp1, cellule, isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xx, yp1, cellule, isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, yp1, cellule, isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xm1, yp1,  isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xx, yp1,  isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xp1, yp1,  isShot, xx, yy);
 
 //                if(neighbours > 5 && mode != GameMode.ORIGINAL && mode != GameMode.COLOR){// upgrade color
 //                    if(cellule < maxValue)
@@ -149,24 +145,25 @@ public class GameCanvas extends Canvas {
                     if(mode == GameMode.BURN_PAPER || mode == GameMode.NUKLEAR_BURN){
                         cellule = maxValue;
                     }else{
-                        cellule = 1;
+                        cellule = 1.0;
                     }
-                    ColorStatus colorStatusTmp = ColorStatus.getColorStatusByValue(cellule);
-                    px.setColor( xx, yy, colorStatusTmp.getColor());
+                    Color colorStatusTmp = new Color(cellule, cellule,
+                            cellule,1.0);
+                    px.setColor( xx, yy, colorStatusTmp);
                 }
 
                 if(neighbours <2){
                     if(cellule > 0)
-                        cellule--;
-                    ColorStatus colorStatusTmp = ColorStatus.getColorStatusByValue(cellule);
-                    px.setColor( xx, yy, colorStatusTmp.getColor());
+                        cellule -=0.001;
+                    px.setColor( xx, yy, new Color(cellule, cellule,
+                            cellule,1.0));
                 }
 
                 if(neighbours <2 || neighbours >3){
                     if(cellule > 0)
-                        cellule--;
-                    ColorStatus colorStatusTmp = ColorStatus.getColorStatusByValue(cellule);
-                    px.setColor( xx, yy, colorStatusTmp.getColor());
+                        cellule -=0.001;
+                    px.setColor( xx, yy, new Color(cellule, cellule,
+                            cellule,1.0));
                 }
                 // explosion
                 int stressExplosion = 8;
@@ -174,9 +171,9 @@ public class GameCanvas extends Canvas {
                     stressExplosion = 7;
                 if(neighbours == stressExplosion && cellule > 0 && !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)){
                     if(mode.equals(GameMode.COLOR))
-                        cellule = 0 ;
+                        cellule = 0.0 ;
                     else
-                        cellule -- ;
+                        cellule -=0.001;
                     px.setColor(xm1, ym1, Color.RED);
                     px.setColor(xx, ym1, Color.RED);
                     px.setColor(xp1, ym1, Color.RED);
@@ -194,65 +191,10 @@ public class GameCanvas extends Canvas {
         setScaleY(scale);
     }
 
-    private int getNeighbourValue(WritableImage snp, int neighbours, int xm, int ym, int activeColor, boolean isShot, int xx , int yy) {
+    private int getNeighbourValue(WritableImage snp, int neighbours, int xm, int ym,  boolean isShot, int xx , int yy) {
         Color color = snp.getPixelReader().getColor(xm, ym);
         int neighbour = ColorStatus.getColorValue(color);
-        if(mode == GameMode.EXTEND)
-            switch (activeColor){
-                case (1): // 2 blue == purple
-                    if(neighbours > 2)
-                    {
-                        activeColor = 2;
-                        snp.getPixelWriter().setColor(xx, yy, Color.PURPLE);
-                    }
-                    break;
-                case (2): //purple change voisin
-                    if(neighbour == 1 )
-                    {
-                        neighbour = 0;
-                        activeColor = 3;
-                        snp.getPixelWriter().setColor(xm, ym, Color.WHITE);
-                        snp.getPixelWriter().setColor(xx, yy, Color.GREEN);
-                    }
-                    break;
-                case(3): //green eat and turn yellow
-                    if(neighbour<3 && neighbour > 0) {
-                        neighbour = 0;
-                        activeColor = 4;
-                        snp.getPixelWriter().setColor(xm, ym, Color.WHITE);
-                        snp.getPixelWriter().setColor(xx, yy, Color.YELLOW);
-                    }
-                    break;
-                case(4): //yellow eat and change
-                    if(neighbour >0 && neighbour<4) {
-                        neighbour = 4;
-                        activeColor = 5;
-                        snp.getPixelWriter().setColor(xm, ym, Color.RED);
-                    }
-                    break;
-                case(5): //ORANGE
-                    if(neighbour >0 && neighbour<6 ) {
-                        neighbour = 6;
-                        activeColor = 7;
-                        snp.getPixelWriter().setColor(xm, ym, Color.RED);
-                        snp.getPixelWriter().setColor(xx, yy, Color.BLACK);
-                    }
-                    break;
-                case(6): //RED
-                    if(neighbour >0 && neighbour<7 ) { //RED Burn
-                        activeColor = 7;
-                        neighbour = 0;
-                        snp.getPixelWriter().setColor(xm, ym, Color.BLACK);
-                        snp.getPixelWriter().setColor(xx, yy, Color.WHITE);
-                    }
-                    break;
-//                case(7): //black valnish if 8 neigbourgs
-//                    if(neighbour == 7) {
-//                        activeColor = 0;
-//                        snp.getPixelWriter().setColor(xx, yy, Color.WHITE);
-//                    }
-//                    break;
-            }
+
         if(neighbour > 0 )
             neighbours++;
         return neighbours;
