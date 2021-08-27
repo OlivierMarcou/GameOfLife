@@ -11,4 +11,8 @@ public class Main  {
         Application.launch(GameofLifeApplication.class, args);
     }
 
+    private static void sp(byte[] decode) {
+        System.out.println(new String(decode));
+    }
+
 }

@@ -29,8 +29,8 @@ public final class GameofLifeApplication extends Application
         }
         stage.setTitle("Game Of Life - with pressure and colors !");
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int width = gd.getDisplayMode().getWidth()-20;
-        int height = gd.getDisplayMode().getHeight()-120;
+        int width = 800;
+        int height = 600;
         stage.setScene(new Scene(mainParent, width, height));
         stage.show();
     }

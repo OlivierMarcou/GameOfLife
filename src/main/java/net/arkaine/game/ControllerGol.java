@@ -13,7 +13,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import net.arkaine.game.component.ColorStatus;
 import net.arkaine.game.component.GameCanvas;
 import net.arkaine.game.component.GameMode;
 
@@ -22,6 +21,9 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -172,9 +174,13 @@ public class ControllerGol {
         if(drawing && mouseEvent.isPrimaryButtonDown()) {
             int x = (int)Math.round(mouseEvent.getX());
             int y = (int)Math.round(mouseEvent.getY());
-            Color selectedColor = Color.BLUE;
-            if(colorComboBox.getSelectionModel().getSelectedItem() != null)
-                selectedColor = ColorStatus.valueOf(colorComboBox.getSelectionModel().getSelectedItem()).getColor();
+            Color selectedColor = new Color(0.0,0.0,1.0,1.0);
+            if(colorComboBox.getSelectionModel().getSelectedItem() != null){
+                List<Double> colorDouble = new ArrayList<>();
+                Arrays.stream(colorComboBox.getSelectionModel().getSelectedItem().split(","))
+                        .forEach(v ->  colorDouble.add(Double.parseDouble(v)));
+                selectedColor = new Color(colorDouble.get(0), colorDouble.get(1), colorDouble.get(2),1.0);
+            }
             gameofLife.getGraphicsContext2D().getPixelWriter().setColor(x, y, selectedColor);
         }
     }
@@ -198,10 +204,7 @@ public class ControllerGol {
         int gameMode = gameofLife.getMode().getValue();
         gameMode++;
         gameofLife.setMode(GameMode.getGameMode(gameMode));
-        if(gameofLife.getMode() == GameMode.ORIGINAL)
-            gameofLife.setMaxValue(1);
-        else
-            gameofLife.setMaxValue(7);
+            gameofLife.setMaxValue(1.0);
 
         oriBtn.setText(gameofLife.getMode().name());
     }
