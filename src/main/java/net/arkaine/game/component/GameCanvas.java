@@ -37,7 +37,9 @@ public class GameCanvas extends Canvas {
     private GameMode mode = GameMode.ORIGINAL;
     private int x = 200;
     private int y = 200;
-
+    private Double maxValue = 1.0;
+    private double fading = 0.01;
+    private int scale = 4;
 
     public Double getMaxValue() {
         return maxValue;
@@ -47,9 +49,6 @@ public class GameCanvas extends Canvas {
         this.maxValue = maxValue;
     }
 
-    private Double maxValue = 1.0;
-
-    private int scale = 2;
     public int getScale() {
         return scale;
     }
@@ -91,7 +90,11 @@ public class GameCanvas extends Canvas {
     }
 
     private Color getRandomColor() {
-        return new Color((Math.random()*(1)),(Math.random()*(1)),(Math.random()*(1)),1.0);
+        int percent = (int) Math.round(Math.random()*(20));
+        Color value = new Color(1,1,1,1);
+        if(percent == 0 )
+            value = new Color((Math.random()*(1)),(Math.random()*(1)),(Math.random()*(1)),1.0);
+        return value;
     }
 
     public void updateGame(){
@@ -121,17 +124,19 @@ public class GameCanvas extends Canvas {
                 if(yp1 >= y)
                     yp1 = 0;
                 boolean isShot = false;
-                Double cellule =  (snp.getPixelReader().getColor(xx, yy).getRed());
-                neighbours = getNeighbourValue(snp, neighbours, xm1, ym1,  isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xx, ym1,  isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, ym1,  isShot, xx, yy);
+                Double celluleR =  (snp.getPixelReader().getColor(xx, yy).getRed());
+                Double celluleV =  (snp.getPixelReader().getColor(xx, yy).getGreen());
+                Double celluleB =  (snp.getPixelReader().getColor(xx, yy).getBlue());
+                neighbours = getNeighbourValue(snp, neighbours, xm1, ym1);
+                neighbours = getNeighbourValue(snp, neighbours, xx, ym1);
+                neighbours = getNeighbourValue(snp, neighbours, xp1, ym1);
 
-                neighbours = getNeighbourValue(snp, neighbours, xm1, yy,  isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, yy,  isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xm1, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xp1, yy);
 
-                neighbours = getNeighbourValue(snp, neighbours, xm1, yp1,  isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xx, yp1,  isShot, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, yp1,  isShot, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, xm1, yp1);
+                neighbours = getNeighbourValue(snp, neighbours, xx, yp1);
+                neighbours = getNeighbourValue(snp, neighbours, xp1, yp1);
 
 //                if(neighbours > 5 && mode != GameMode.ORIGINAL && mode != GameMode.COLOR){// upgrade color
 //                    if(cellule < maxValue)
@@ -141,39 +146,53 @@ public class GameCanvas extends Canvas {
 //                    px.setColor( xx, yy, colorStatusTmp.getColor());
 //                }
 
+                boolean cellule = (!(celluleR ==1.0 && celluleV == 1.0 && celluleB == 1.0 )? true: false);
                 if(neighbours == 3){ // create cellule
                     if(mode == GameMode.BURN_PAPER || mode == GameMode.NUKLEAR_BURN){
-                        cellule = maxValue;
+                        if(celluleR > 0)
+                            celluleR -=fading;
+                        if(celluleR < 0)
+                            celluleR =0.0;
+                        if(celluleR == 0){
+                            if(celluleV > 0)
+                                celluleV -=fading;
+                            if(celluleV < 0)
+                                celluleV =0.0;
+                            if(celluleV == 0){
+                                if(celluleB > 0)
+                                    celluleB -=fading;
+                                if(celluleB < 0)
+                                    celluleB =0.0;
+                            }
+                        }
                     }else{
-                        cellule = 1.0;
+                        celluleR = 0.0;
+                        celluleV = 0.0;
+                        celluleB = 1.0;
                     }
-                    Color colorStatusTmp = new Color(cellule, cellule,
-                            cellule,1.0);
+                    Color colorStatusTmp = new Color(celluleR, celluleV,
+                            celluleB, 1.0);
                     px.setColor( xx, yy, colorStatusTmp);
                 }
 
-                if(neighbours <2){
-                    if(cellule > 0)
-                        cellule -=0.001;
-                    px.setColor( xx, yy, new Color(cellule, cellule,
-                            cellule,1.0));
-                }
-
+             //   cellule =  (!(celluleR ==1.0 && celluleV == 1.0 && celluleB == 1.0 )? true: false);
                 if(neighbours <2 || neighbours >3){
-                    if(cellule > 0)
-                        cellule -=0.001;
-                    px.setColor( xx, yy, new Color(cellule, cellule,
-                            cellule,1.0));
+                    if(cellule ){
+
+                        celluleR = 1.0;
+                        celluleV = 1.0;
+                        celluleB = 1.0;
+                        px.setColor( xx, yy, new Color(celluleR, celluleV,
+                                celluleB, 1.0));
+                    }
                 }
+                cellule =  (!(celluleR ==1.0 && celluleV == 1.0 && celluleB == 1.0 )? true: false);
+
                 // explosion
                 int stressExplosion = 8;
                 if (mode.equals(GameMode.NUKLEAR_BURN))
                     stressExplosion = 7;
-                if(neighbours == stressExplosion && cellule > 0 && !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)){
-                    if(mode.equals(GameMode.COLOR))
-                        cellule = 0.0 ;
-                    else
-                        cellule -=0.001;
+                if(neighbours == stressExplosion && cellule && !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)){
                     px.setColor(xm1, ym1, Color.RED);
                     px.setColor(xx, ym1, Color.RED);
                     px.setColor(xp1, ym1, Color.RED);
@@ -191,11 +210,10 @@ public class GameCanvas extends Canvas {
         setScaleY(scale);
     }
 
-    private int getNeighbourValue(WritableImage snp, int neighbours, int xm, int ym,  boolean isShot, int xx , int yy) {
+    private int getNeighbourValue(WritableImage snp, int neighbours, int xm, int ym) {
         Color color = snp.getPixelReader().getColor(xm, ym);
-        int neighbour = ColorStatus.getColorValue(color);
 
-        if(neighbour > 0 )
+        if(color.getRed() < 1.0 || color.getGreen() < 1.0 || color.getBlue() < 1.0  )
             neighbours++;
         return neighbours;
     }
