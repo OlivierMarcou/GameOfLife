@@ -25,7 +25,6 @@ public class GameCanvas extends Canvas {
         this.y = y;
     }
 
-
     public GameMode getMode() {
         return mode;
     }
@@ -40,10 +39,6 @@ public class GameCanvas extends Canvas {
     private Double maxValue = 1.0;
     private double fading = 0.005;
     private int scale = 4;
-    private double[] startingColor ={ 1.0,0.5,0.5};
-    public Double getMaxValue() {
-        return maxValue;
-    }
 
     public void setMaxValue(Double maxValue) {
         this.maxValue = maxValue;
@@ -144,13 +139,9 @@ public class GameCanvas extends Canvas {
                 neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xp1, yp1, xx, yy);
                 cellule = (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
 
-//                if(neighbours > 5 && mode != GameMode.ORIGINAL && mode != GameMode.COLOR){// upgrade color
-//                    if(cellule < maxValue)
-//                        if(cellule > 0)
-//                            cellule++;
-//                    ColorStatus colorStatusTmp = ColorStatus.getColorStatusByValue(cellule);
-//                    px.setColor( xx, yy, colorStatusTmp.getColor());
-//                }
+                if(cellule && neighbours > 4 && mode != GameMode.ORIGINAL && mode != GameMode.COLOR){// upgrade color
+                    px.setColor( xx, yy, incColorWithoutWhite(turpleColor));
+                }
 
                 if(cellule &&
                         !isChange &&
@@ -367,16 +358,23 @@ public class GameCanvas extends Canvas {
                             neighbours++;
                         snp.getPixelWriter().setColor(xp1, yy, getRandomNewColor());
 
-                        colorTest = snp.getPixelReader().getColor(xp1, yy);
+                        colorTest = snp.getPixelReader().getColor(xm1, yy);
                         if(colorTest != Color.WHITE)
                             neighbours++;
-                        snp.getPixelWriter().setColor(xm1, ym1, getRandomNewColor());
+                        snp.getPixelWriter().setColor(xm1, yy, getRandomNewColor());
 
-                        colorTest = snp.getPixelReader().getColor(xp1, yy);
+                        colorTest = snp.getPixelReader().getColor(xp1, ym1);
                         if(colorTest != Color.WHITE)
                             neighbours++;
-                        snp.getPixelWriter().setColor(xx,yp1, getRandomNewColor());
-                        snp.getPixelWriter().setColor(xx, yy, Color.YELLOW);
+                        snp.getPixelWriter().setColor(xp1,ym1, getRandomNewColor());
+
+
+                        colorTest = snp.getPixelReader().getColor(xm1, ym1);
+                        if(colorTest != Color.WHITE)
+                            neighbours++;
+                        snp.getPixelWriter().setColor(xm1,yp1, getRandomNewColor());
+
+                        snp.getPixelWriter().setColor(xx, yy, Color.WHITE);
                     }
             }
 
@@ -421,39 +419,35 @@ public class GameCanvas extends Canvas {
             if(neighbourCellule)
                 neighbours++;
         }else {
-            if(mode .equals(GameMode.BURN_PAPER)){
-                if(turpleColor[0] == 0.0 &&turpleColor[1] == 0.0 && turpleColor[2] == 0.0){
-                    int xm1 = xx-1;
-                    if(xm1 < 0 )
-                        xm1 = x-1;
+            if(mode .equals(GameMode.BURN_PAPER)
+                    && turpleColor[0] == 0.0 &&turpleColor[1] == 0.0 && turpleColor[2] == 0.0){
+                int xm1 = xx-1;
+                if(xm1 < 0 )
+                    xm1 = x-1;
+                int xp1 = xx+1;
+                if(xp1 >= x)
+                    xp1 = 0;
+                int ym1 = yy-1;
+                if(ym1 < 0 )
+                    ym1 = y-1;
+                int yp1 = yy+1;
+                if(yp1 >= y)
+                    yp1 = 0;
+                Color colorTest = snp.getPixelReader().getColor(xp1, yy);
+                if(colorTest != Color.WHITE)
+                    neighbours++;
+                snp.getPixelWriter().setColor(xp1, yy, getRandomNewColor());
 
-                    int xp1 = xx+1;
-                    if(xp1 >= x)
-                        xp1 = 0;
+                colorTest = snp.getPixelReader().getColor(xp1, yy);
+                if(colorTest != Color.WHITE)
+                    neighbours++;
+                snp.getPixelWriter().setColor(xm1, ym1, getRandomNewColor());
 
-                    int ym1 = yy-1;
-                    if(ym1 < 0 )
-                        ym1 = y-1;
-
-                    int yp1 = yy+1;
-                    if(yp1 >= y)
-                        yp1 = 0;
-                    Color colorTest = snp.getPixelReader().getColor(xp1, yy);
-                    if(colorTest != Color.WHITE)
-                        neighbours++;
-                    snp.getPixelWriter().setColor(xp1, yy, getRandomNewColor());
-
-                    colorTest = snp.getPixelReader().getColor(xp1, yy);
-                    if(colorTest != Color.WHITE)
-                        neighbours++;
-                    snp.getPixelWriter().setColor(xm1, ym1, getRandomNewColor());
-
-                    colorTest = snp.getPixelReader().getColor(xp1, yy);
-                    if(colorTest != Color.WHITE)
-                        neighbours++;
-                    snp.getPixelWriter().setColor(xx,yp1, getRandomNewColor());
-                    snp.getPixelWriter().setColor(xx, yy, Color.WHITE);
-                }
+                colorTest = snp.getPixelReader().getColor(xp1, yy);
+                if(colorTest != Color.WHITE)
+                    neighbours++;
+                snp.getPixelWriter().setColor(xx,yp1, getRandomNewColor());
+                snp.getPixelWriter().setColor(xx, yy, Color.WHITE);
             }else
                 if(color.getRed() < 1.0 || color.getGreen() < 1.0 || color.getBlue() < 1.0  )
                     neighbours++;
