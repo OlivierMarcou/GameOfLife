@@ -427,26 +427,14 @@ public class GameCanvas extends Canvas {
                 int xp1 = xx+1;
                 if(xp1 >= x)
                     xp1 = 0;
-                int ym1 = yy-1;
-                if(ym1 < 0 )
-                    ym1 = y-1;
-                int yp1 = yy+1;
-                if(yp1 >= y)
-                    yp1 = 0;
                 Color colorTest = snp.getPixelReader().getColor(xp1, yy);
                 if(colorTest != Color.WHITE)
                     neighbours++;
                 snp.getPixelWriter().setColor(xp1, yy, getRandomNewColor());
-
-                colorTest = snp.getPixelReader().getColor(xp1, yy);
+                colorTest = snp.getPixelReader().getColor(xm1, yy);
                 if(colorTest != Color.WHITE)
                     neighbours++;
-                snp.getPixelWriter().setColor(xm1, ym1, getRandomNewColor());
-
-                colorTest = snp.getPixelReader().getColor(xp1, yy);
-                if(colorTest != Color.WHITE)
-                    neighbours++;
-                snp.getPixelWriter().setColor(xx,yp1, getRandomNewColor());
+                snp.getPixelWriter().setColor(xm1, yy, getRandomNewColor());
                 snp.getPixelWriter().setColor(xx, yy, Color.WHITE);
             }else
                 if(color.getRed() < 1.0 || color.getGreen() < 1.0 || color.getBlue() < 1.0  )
