@@ -40,7 +40,7 @@ public class GameCanvas extends Canvas {
     private Double maxValue = 1.0;
     private double fading = 0.01;
     private int scale = 4;
-
+    private double[] startingColor ={ 1.0,0.5,0.5};
     public Double getMaxValue() {
         return maxValue;
     }
@@ -90,7 +90,7 @@ public class GameCanvas extends Canvas {
     }
 
     private Color getRandomColor() {
-        int percent = (int) Math.round(Math.random()*(20));
+        int percent = (int) Math.round(Math.random()*(6));
         Color value = new Color(1,1,1,1);
         if(percent == 0 )
             value = new Color((Math.random()*(1)),(Math.random()*(1)),(Math.random()*(1)),1.0);
@@ -98,6 +98,7 @@ public class GameCanvas extends Canvas {
     }
 
     public void updateGame(){
+        boolean isChange = false;
         age++;
         setScaleX(1);
         setScaleY(1);
@@ -123,20 +124,21 @@ public class GameCanvas extends Canvas {
                 int yp1 = yy+1;
                 if(yp1 >= y)
                     yp1 = 0;
-                boolean isShot = false;
-                Double celluleR =  (snp.getPixelReader().getColor(xx, yy).getRed());
-                Double celluleV =  (snp.getPixelReader().getColor(xx, yy).getGreen());
-                Double celluleB =  (snp.getPixelReader().getColor(xx, yy).getBlue());
-                neighbours = getNeighbourValue(snp, neighbours, xm1, ym1);
-                neighbours = getNeighbourValue(snp, neighbours, xx, ym1);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, ym1);
 
-                neighbours = getNeighbourValue(snp, neighbours, xm1, yy);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, yy);
+                Color color = snp.getPixelReader().getColor(xx, yy);
+                double [] turpleColor = {color.getRed(), color.getGreen(), color.getBlue()};
 
-                neighbours = getNeighbourValue(snp, neighbours, xm1, yp1);
-                neighbours = getNeighbourValue(snp, neighbours, xx, yp1);
-                neighbours = getNeighbourValue(snp, neighbours, xp1, yp1);
+                boolean cellule = (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
+                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xm1, ym1, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xx, ym1, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xp1, ym1, xx, yy);
+
+                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xm1, yy, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xp1, yy, xx, yy);
+
+                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xm1, yp1, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xx, yp1, xx, yy);
+                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xp1, yp1, xx, yy);
 
 //                if(neighbours > 5 && mode != GameMode.ORIGINAL && mode != GameMode.COLOR){// upgrade color
 //                    if(cellule < maxValue)
@@ -146,75 +148,207 @@ public class GameCanvas extends Canvas {
 //                    px.setColor( xx, yy, colorStatusTmp.getColor());
 //                }
 
-                boolean cellule = (!(celluleR ==1.0 && celluleV == 1.0 && celluleB == 1.0 )? true: false);
+                cellule = (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
                 if(neighbours == 3){ // create cellule
-                    if(mode == GameMode.BURN_PAPER || mode == GameMode.NUKLEAR_BURN){
-                        if(celluleR > 0)
-                            celluleR -=fading;
-                        if(celluleR < 0)
-                            celluleR =0.0;
-                        if(celluleR == 0){
-                            if(celluleV > 0)
-                                celluleV -=fading;
-                            if(celluleV < 0)
-                                celluleV =0.0;
-                            if(celluleV == 0){
-                                if(celluleB > 0)
-                                    celluleB -=fading;
-                                if(celluleB < 0)
-                                    celluleB =0.0;
+                        if(!cellule){
+                            turpleColor[0] = startingColor[0];
+                            turpleColor[1] = startingColor[1];
+                            turpleColor[2] = startingColor[2];
+                        }
+                        if(turpleColor[0] > 0)
+                            turpleColor[0] -=fading;
+                        if(turpleColor[0] < 0)
+                            turpleColor[0] =0.0;
+                        if(turpleColor[0] == 0){
+                            if(turpleColor[1] > 0)
+                                turpleColor[1] -=fading;
+                            if(turpleColor[1] < 0)
+                                turpleColor[1] =0.0;
+                            if(turpleColor[1] == 0){
+                                if(turpleColor[2] > 0)
+                                    turpleColor[2] -=fading;
+                                if(turpleColor[2] < 0)
+                                    turpleColor[2] =0.0;
                             }
                         }
-                    }else{
-                        celluleR = 0.0;
-                        celluleV = 0.0;
-                        celluleB = 1.0;
-                    }
-                    Color colorStatusTmp = new Color(celluleR, celluleV,
-                            celluleB, 1.0);
+                  //  }
+                    Color colorStatusTmp = new Color(turpleColor[0], turpleColor[1],
+                            turpleColor[2], 1.0);
                     px.setColor( xx, yy, colorStatusTmp);
+                    isChange = true;
                 }
 
-             //   cellule =  (!(celluleR ==1.0 && celluleV == 1.0 && celluleB == 1.0 )? true: false);
-                if(neighbours <2 || neighbours >3){
-                    if(cellule ){
+                if(!isChange && cellule && !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)) {
+                    // explosion
+                    int stressExplosion = 8;
+                    if (mode.equals(GameMode.NUKLEAR_BURN))
+                        stressExplosion = 7;
+                    if (neighbours == stressExplosion) {
+                        px.setColor(xm1, ym1, Color.RED);
+                        px.setColor(xx, ym1, Color.RED);
+                        px.setColor(xp1, ym1, Color.RED);
 
-                        celluleR = 1.0;
-                        celluleV = 1.0;
-                        celluleB = 1.0;
-                        px.setColor( xx, yy, new Color(celluleR, celluleV,
-                                celluleB, 1.0));
+                        px.setColor(xm1, yy, Color.RED);
+                        px.setColor(xp1, yy, Color.RED);
+
+                        px.setColor(xm1, yp1, Color.RED);
+                        px.setColor(xx, yp1, Color.RED);
+                        px.setColor(xp1, yp1, Color.RED);
+                        px.setColor(xx, yy, Color.WHITE);
+                        turpleColor[0] = 1.0;
+                        turpleColor[1] = 1.0;
+                        turpleColor[2] = 1.0;
+                        isChange = true;
                     }
                 }
-                cellule =  (!(celluleR ==1.0 && celluleV == 1.0 && celluleB == 1.0 )? true: false);
 
-                // explosion
-                int stressExplosion = 8;
-                if (mode.equals(GameMode.NUKLEAR_BURN))
-                    stressExplosion = 7;
-                if(neighbours == stressExplosion && cellule && !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)){
-                    px.setColor(xm1, ym1, Color.RED);
-                    px.setColor(xx, ym1, Color.RED);
-                    px.setColor(xp1, ym1, Color.RED);
+                //dead cellule
+                cellule =  (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
+                if(cellule && !isChange && (neighbours <2 || neighbours >3)){
 
-                    px.setColor(xm1, yy, Color.RED);
-                    px.setColor(xp1, yy, Color.RED);
+                        turpleColor[0] = 1.0;
+                        turpleColor[1] = 1.0;
+                        turpleColor[2] = 1.0;
+                        px.setColor( xx, yy, new Color(turpleColor[0], turpleColor[1],
+                                turpleColor[2], 1.0));
+                        isChange = true;
 
-                    px.setColor(xm1, yp1, Color.RED);
-                    px.setColor(xx, yp1, Color.RED);
-                    px.setColor(xp1, yp1, Color.RED);
-                    px.setColor( xx, yy, Color.WHITE);
+                }
+//vieillissement
+                cellule =  (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
+                if(cellule){
+                    if(turpleColor[0] > 0)
+                        turpleColor[0] -=fading;
+                    if(turpleColor[0] < 0)
+                        turpleColor[0] =0.0;
+                    if(turpleColor[0] == 0){
+                        if(turpleColor[1] > 0)
+                            turpleColor[1] -=fading;
+                        if(turpleColor[1] < 0)
+                            turpleColor[1] =0.0;
+                        if(turpleColor[1] == 0){
+                            if(turpleColor[2] > 0)
+                                turpleColor[2] -=fading;
+                            if(turpleColor[2] < 0)
+                                turpleColor[2] =0.0;
+                        }
+                    }
+
+                    px.setColor( xx, yy, new Color(turpleColor[0], turpleColor[1],
+                            turpleColor[2], 1.0));
                 }
             }
         setScaleX(scale);
         setScaleY(scale);
     }
 
-    private int getNeighbourValue(WritableImage snp, int neighbours, int xm, int ym) {
-        Color color = snp.getPixelReader().getColor(xm, ym);
+    private Color decreasColor(double[] turpleColor){
+        if(turpleColor[0] > 0)
+            turpleColor[0] -=fading;
+        if(turpleColor[0] < 0)
+            turpleColor[0] =0.0;
+        if(turpleColor[0] == 0){
+            if(turpleColor[1] > 0)
+                turpleColor[1] -=fading;
+            if(turpleColor[1] < 0)
+                turpleColor[1] =0.0;
+            if(turpleColor[1] == 0){
+                if(turpleColor[2] > 0)
+                    turpleColor[2] -=fading;
+                if(turpleColor[2] < 0)
+                    turpleColor[2] =0.0;
+            }
+        }
+        return  new Color(turpleColor[0], turpleColor[1], turpleColor[2], 1.0);
+    }
+    private Color incColor(double[] turpleColor){
+        if(turpleColor[0] <1.0)
+            turpleColor[0] +=fading;
+        if(turpleColor[0] > 1.0)
+            turpleColor[0] = 1.0;
+        if(turpleColor[0] == 1.0){
+            if(turpleColor[1]  <1.0)
+                turpleColor[1] +=fading;
+            if(turpleColor[1] > 1.0)
+                turpleColor[1] = 1.0;
+            if(turpleColor[1] == 1.0){
+                if(turpleColor[2]  <1.0)
+                    turpleColor[2] +=fading;
+                if(turpleColor[2] > 1.0)
+                    turpleColor[2] = 1.0;
+            }
+        }
+        return  new Color(turpleColor[0], turpleColor[1], turpleColor[2], 1.0);
+    }
 
-        if(color.getRed() < 1.0 || color.getGreen() < 1.0 || color.getBlue() < 1.0  )
-            neighbours++;
+
+    private Color incColorWithoutWhite(double[] turpleColor){
+        if(turpleColor[0] <1.0)
+            turpleColor[0] +=fading;
+        if(turpleColor[0] > 1.0)
+            turpleColor[0] = 1.0;
+        if(turpleColor[0] == 1.0){
+            if(turpleColor[1]  <1.0)
+                turpleColor[1] +=fading;
+            if(turpleColor[1] > 1.0)
+                turpleColor[1] = 1.0;
+            if(turpleColor[1] == 1.0){
+                if(turpleColor[2]  <1.0-fading)
+                    turpleColor[2] +=fading;
+                if(turpleColor[2] > 1.0-fading)
+                    return  new Color(turpleColor[0], turpleColor[1], turpleColor[2], 1.0);
+            }
+        }
+        return  new Color(turpleColor[0], turpleColor[1], turpleColor[2], 1.0);
+    }
+    private int getNeighbourValue(WritableImage snp, int neighbours, boolean cellule, double[] turpleColor, int xm, int ym, int xx, int yy) {
+
+        Color color = snp.getPixelReader().getColor(xm, ym);
+        if(mode == GameMode.EXTEND){
+            double [] neighbourColor = {color.getRed(), color.getGreen(), color.getBlue()};
+            boolean neighbourCellule =  (!(neighbourColor[0] ==1.0 && neighbourColor[1] == 1.0 && neighbourColor[2] == 1.0 )? true: false);
+            if(cellule){
+                if(turpleColor[0] >= 0.6 && turpleColor[0] < 1.0){
+                    if(neighbours > 2)
+                    {
+                        snp.getPixelWriter().setColor(xx, yy, decreasColor(turpleColor));
+                    }
+                }else
+                if(neighbourCellule && turpleColor[0] >= 0.3 && turpleColor[0] < 0.6){
+                            snp.getPixelWriter().setColor(xm, ym, incColorWithoutWhite(turpleColor));
+                            snp.getPixelWriter().setColor(xx, yy, Color.GREEN);
+
+                }else
+                if(neighbourCellule && turpleColor[0] >= 0.0 && turpleColor[0] < 0.3){
+                        neighbourCellule = false;
+                        snp.getPixelWriter().setColor(xm, ym, incColorWithoutWhite(turpleColor));
+                        snp.getPixelWriter().setColor(xx, yy, Color.YELLOW);
+
+                }else
+                if(neighbourCellule && turpleColor[1] >= 0.6 && turpleColor[1] < 1.0){
+                        neighbourCellule = true;
+                        snp.getPixelWriter().setColor(xm, ym, decreasColor(turpleColor));
+
+                }else
+                if(neighbourCellule && turpleColor[1] >= 0.3 && turpleColor[1] < 0.6){
+                        neighbourCellule = true;
+                        snp.getPixelWriter().setColor(xm, ym, decreasColor(turpleColor));
+                        snp.getPixelWriter().setColor(xx, yy, Color.BLACK);
+
+                }else
+                if(neighbourCellule && turpleColor[1] >= 0.0 && turpleColor[1] < 0.3){
+                        neighbourCellule = true;
+                        snp.getPixelWriter().setColor(xm, ym, Color.BLACK);
+                        snp.getPixelWriter().setColor(xx, yy,  new Color((Math.random()*(1)),(Math.random()*(1)),(Math.random()*(1)),0.99999));
+
+                }
+            }
+            if(neighbourCellule)
+                neighbours++;
+        }else {
+            if(color.getRed() < 1.0 || color.getGreen() < 1.0 || color.getBlue() < 1.0  )
+                neighbours++;
+        }
         return neighbours;
     }
 }

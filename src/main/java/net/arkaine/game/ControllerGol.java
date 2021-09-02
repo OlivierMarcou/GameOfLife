@@ -13,7 +13,6 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
-import net.arkaine.game.component.ColorStatus;
 import net.arkaine.game.component.GameCanvas;
 import net.arkaine.game.component.GameMode;
 
