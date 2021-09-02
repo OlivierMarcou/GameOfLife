@@ -89,6 +89,9 @@ public class GameCanvas extends Canvas {
         setScaleY(scale);
     }
 
+    private double randomDouble(){
+        return Math.random()*(0.999999);
+    }
     private Color getRandomColor() {
         int percent = (int) Math.round(Math.random()*(6));
         Color value = new Color(1,1,1,1);
@@ -151,9 +154,9 @@ public class GameCanvas extends Canvas {
                 cellule = (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
                 if(neighbours == 3){ // create cellule
                         if(!cellule){
-                            turpleColor[0] = startingColor[0];
-                            turpleColor[1] = startingColor[1];
-                            turpleColor[2] = startingColor[2];
+                            turpleColor[0] = randomDouble();//startingColor[0];
+                            turpleColor[1] = randomDouble();//startingColor[1];
+                            turpleColor[2] = randomDouble();//startingColor[2];
                         }
                         if(turpleColor[0] > 0)
                             turpleColor[0] -=fading;
@@ -175,10 +178,12 @@ public class GameCanvas extends Canvas {
                     Color colorStatusTmp = new Color(turpleColor[0], turpleColor[1],
                             turpleColor[2], 1.0);
                     px.setColor( xx, yy, colorStatusTmp);
-                    isChange = true;
+       //             isChange = true;
                 }
 
-                if(!isChange && cellule && !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)) {
+                if(cellule &&
+        //                isChange        &&
+                        !mode.equals(GameMode.ORIGINAL) && !mode.equals(GameMode.EXTEND)) {
                     // explosion
                     int stressExplosion = 8;
                     if (mode.equals(GameMode.NUKLEAR_BURN))
@@ -198,20 +203,22 @@ public class GameCanvas extends Canvas {
                         turpleColor[0] = 1.0;
                         turpleColor[1] = 1.0;
                         turpleColor[2] = 1.0;
-                        isChange = true;
+            //            isChange = true;
                     }
                 }
 
                 //dead cellule
                 cellule =  (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
-                if(cellule && !isChange && (neighbours <2 || neighbours >3)){
+                if(cellule
+           //             && !isChange
+                        && (neighbours <2 || neighbours >3)){
 
                         turpleColor[0] = 1.0;
                         turpleColor[1] = 1.0;
                         turpleColor[2] = 1.0;
                         px.setColor( xx, yy, new Color(turpleColor[0], turpleColor[1],
                                 turpleColor[2], 1.0));
-                        isChange = true;
+             //           isChange = true;
 
                 }
 //vieillissement
@@ -283,16 +290,16 @@ public class GameCanvas extends Canvas {
 
 
     private Color incColorWithoutWhite(double[] turpleColor){
-        if(turpleColor[0] <1.0)
+        if(turpleColor[0] <1.0-fading)
             turpleColor[0] +=fading;
-        if(turpleColor[0] > 1.0)
-            turpleColor[0] = 1.0;
-        if(turpleColor[0] == 1.0){
-            if(turpleColor[1]  <1.0)
+        if(turpleColor[0] > 1.0-fading)
+            turpleColor[0] = 1.0-fading;
+        if(turpleColor[0] == 1.0-fading){
+            if(turpleColor[1]  <1.0-fading)
                 turpleColor[1] +=fading;
-            if(turpleColor[1] > 1.0)
-                turpleColor[1] = 1.0;
-            if(turpleColor[1] == 1.0){
+            if(turpleColor[1] > 1.0-fading)
+                turpleColor[1] = 1.0-fading;
+            if(turpleColor[1] == 1.0-fading){
                 if(turpleColor[2]  <1.0-fading)
                     turpleColor[2] +=fading;
                 if(turpleColor[2] > 1.0-fading)
@@ -315,13 +322,13 @@ public class GameCanvas extends Canvas {
                     }
                 }else
                 if(neighbourCellule && turpleColor[0] >= 0.3 && turpleColor[0] < 0.6){
-                            snp.getPixelWriter().setColor(xm, ym, incColorWithoutWhite(turpleColor));
+                            snp.getPixelWriter().setColor(xm, ym, decreasColor(turpleColor));
                             snp.getPixelWriter().setColor(xx, yy, Color.GREEN);
 
                 }else
                 if(neighbourCellule && turpleColor[0] >= 0.0 && turpleColor[0] < 0.3){
                         neighbourCellule = false;
-                        snp.getPixelWriter().setColor(xm, ym, incColorWithoutWhite(turpleColor));
+                        snp.getPixelWriter().setColor(xm, ym, decreasColor(turpleColor));
                         snp.getPixelWriter().setColor(xx, yy, Color.YELLOW);
 
                 }else
@@ -339,7 +346,7 @@ public class GameCanvas extends Canvas {
                 if(neighbourCellule && turpleColor[1] >= 0.0 && turpleColor[1] < 0.3){
                         neighbourCellule = true;
                         snp.getPixelWriter().setColor(xm, ym, Color.BLACK);
-                        snp.getPixelWriter().setColor(xx, yy,  new Color((Math.random()*(1)),(Math.random()*(1)),(Math.random()*(1)),0.99999));
+                        snp.getPixelWriter().setColor(xx, yy, new Color((Math.random()*(0.5)),(Math.random()*(0.5)),(Math.random()*(0.999999)),1.0));
 
                 }
             }
