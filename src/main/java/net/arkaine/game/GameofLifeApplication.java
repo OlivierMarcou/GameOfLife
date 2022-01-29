@@ -1,9 +1,12 @@
 package net.arkaine.game;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 import java.awt.*;
@@ -29,9 +32,27 @@ public final class GameofLifeApplication extends Application
         }
         stage.setTitle("Game Of Life - with pressure and colors !");
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-        int width = 800;
-        int height = 600;
-        stage.setScene(new Scene(mainParent, width, height));
+
+        Dimension size
+                = Toolkit.getDefaultToolkit().getScreenSize();
+        int width = size.width;
+        int height = size.height;
+        Scene scene = new Scene(mainParent, width, height);
+       // stage.setFullScreen(true);
+        stage.setScene(scene);
+
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>
+                () {
+
+            @Override
+            public void handle(KeyEvent t) {
+                if(t.getCode()== KeyCode.ESCAPE)
+                {
+                    System.exit(0);
+
+                }
+            }
+        });
         stage.show();
     }
 }
