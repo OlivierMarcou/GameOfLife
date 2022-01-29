@@ -49,13 +49,13 @@
            <style></style>
            <items>
                <FXCollections fx:factory="observableArrayList">
-                   <String fx:value="1,1,1"/>
-                   <String fx:value="0,0,1" />
-                   <String fx:value="0,0.5,1" />
-                   <String fx:value="0,1,0" />
-                   <String fx:value="1,1,0" />
-                   <String fx:value="1,0.5,0" />
-                   <String fx:value="1,0,0" />
+                   <String fx:value="255,255,255"/>
+                   <String fx:value="0,0,255" />
+                   <String fx:value="0,127,255" />
+                   <String fx:value="0,255,0" />
+                   <String fx:value="255,255,0" />
+                   <String fx:value="255,127,0" />
+                   <String fx:value="255,0,0" />
                    <String fx:value="0,0,0" />
                </FXCollections>
            </items>

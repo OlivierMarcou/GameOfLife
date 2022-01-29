@@ -6,22 +6,19 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.paint.Color;
+
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 
 public class GameCanvas extends Canvas {
 
 
-    private int x = 800;
-    private int y = 400;
-    private double fading = 0.005;
-    private int scale =2;
-
-
+    private int x = 300;
+    private int y = 200;
+    private int fading = 1;
+    private int scale = 4;
+    private BufferedImage buf = new BufferedImage(x,y, BufferedImage.TYPE_INT_RGB);
     private GraphicsContext gc = getGraphicsContext2D();
 
     public GameCanvas(){
@@ -31,6 +28,7 @@ public class GameCanvas extends Canvas {
     public void init() {
         Dimension size
                 = Toolkit.getDefaultToolkit().getScreenSize();
+        gc = getGraphicsContext2D();
         x = size.width/scale;
         y = size.height/scale;
         setHeight(y);
@@ -43,7 +41,10 @@ public class GameCanvas extends Canvas {
             }
         SnapshotParameters params = new SnapshotParameters();
         WritableImage snp = this.snapshot(params, null);
-        buf = SwingFXUtils.fromFXImage(snp, null);
+        buf = SwingFXUtils.fromFXImage(snp, buf);
+        while(buf.getWidth() < 1){
+            System.out.print(buf.getRGB(1,1) + " ");
+        }
         setScaleX(scale);
         setScaleY(scale);
     }
@@ -54,7 +55,7 @@ public class GameCanvas extends Canvas {
         setWidth(y);
         for(int xx= 0 ; xx<x ; xx++)
             for(int yy= 0 ; yy<y ; yy++)
-                px.setColor( xx, yy, Color.WHITE);
+                px.setColor( xx, yy, javafx.scene.paint.Color.WHITE);
         SnapshotParameters params = new SnapshotParameters();
         WritableImage snp = this.snapshot(params, null);
         buf = SwingFXUtils.fromFXImage(snp, null);
@@ -65,22 +66,23 @@ public class GameCanvas extends Canvas {
     private double randomDouble(){
         return Math.random()*(0.999999);
     }
-    private Color getRandomColor() {
+    private int randomInt(){
+        return (int) (Math.random()*(254));
+    }
+
+    private javafx.scene.paint.Color getRandomColor() {
         int percent = (int) Math.round(Math.random()*(6));
-        Color value = new Color(1,1,1,1);
+        javafx.scene.paint.Color value = new javafx.scene.paint.Color(1,1,1,1);
         if(percent == 0 )
-            value = new Color((Math.random()*(1)),(Math.random()*(1)),(Math.random()*(1)),1.0);
+            value = new javafx.scene.paint.Color((Math.random()*(1)),(Math.random()*(1)),(Math.random()*(1)),1.0);
         return value;
     }
-    private BufferedImage buf = null;
+
     public void updateGame() throws Exception {
         boolean isChange = false;
 
         setScaleX(1);
         setScaleY(1);
-        SnapshotParameters params = new SnapshotParameters();
-        WritableImage snp = this.snapshot(params, null);
-         buf = SwingFXUtils.fromFXImage(snp, null);
 
         for(int yy= 0 ; yy<y ; yy++){
             for(int xx= 0 ; xx<x ; xx++)
@@ -102,70 +104,59 @@ public class GameCanvas extends Canvas {
                 if(yp1 >= y)
                     yp1 = 0;
 
-                 Color color = snp.getPixelReader().getColor(xx, yy);
-                double [] turpleColor = {color.getRed(), color.getGreen(), color.getBlue()};
+                java.awt.Color actualCelluleColor = getColor(xx, yy);
 
-                boolean cellule = (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
-                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xm1, ym1, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xx, ym1, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xp1, ym1, xx, yy);
+                boolean cellule = actualCelluleColor.getRGB() != java.awt.Color.WHITE.getRGB();
+                neighbours = getNeighbourValue(buf, neighbours, cellule, actualCelluleColor, xm1, ym1, xx, yy);
+                neighbours = getNeighbourValue(buf, neighbours, cellule, actualCelluleColor, xx, ym1, xx, yy);
+                neighbours = getNeighbourValue(buf, neighbours, cellule, actualCelluleColor, xp1, ym1, xx, yy);
 
-                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xm1, yy, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xp1, yy, xx, yy);
+                neighbours = getNeighbourValue(buf, neighbours, cellule, actualCelluleColor, xm1, yy, xx, yy);
+                neighbours = getNeighbourValue(buf, neighbours, cellule, actualCelluleColor, xp1, yy, xx, yy);
 
-                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xm1, yp1, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xx, yp1, xx, yy);
-                neighbours = getNeighbourValue(snp, neighbours, cellule, turpleColor, xp1, yp1, xx, yy);
-                cellule = (!(turpleColor[0] ==1.0f && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
+                neighbours = getNeighbourValue(buf, neighbours, cellule, actualCelluleColor, xm1, yp1, xx, yy);
+                neighbours = getNeighbourValue(buf, neighbours, cellule, actualCelluleColor, xx, yp1, xx, yy);
+                neighbours = getNeighbourValue(buf, neighbours, cellule, actualCelluleColor, xp1, yp1, xx, yy);
+              //  actualCelluleColor = getColor(xx, yy);
+             //   cellule = (actualCelluleColor.getRGB() != Color.WHITE.getRGB());
 
-                 ColorModel colorModel;
-                 final WritableRaster raster;
                 if(cellule && neighbours > 4 ){// upgrade color
-                    buf.setRGB( xx, yy, getRGBint(incColorWithoutWhite(turpleColor)));
+                    buf.setRGB( xx, yy, incColorWithoutWhite(actualCelluleColor));
                 }
 
                 if(cellule &&
                         !isChange ) {
                     // explosion
-                    int stressExplosion = 8;
+                    int stressExplosion = 7;
                     if (neighbours == stressExplosion) {
-                        buf.setRGB(xm1, ym1, java.awt.Color.RED.getRGB());
-                        buf.setRGB(xx, ym1, java.awt.Color.RED.getRGB());
-                        buf.setRGB(xp1, ym1, java.awt.Color.RED.getRGB());
+                        buf.setRGB(xm1, ym1, Color.RED.getRGB());
+                        buf.setRGB(xx, ym1, Color.RED.getRGB());
+                        buf.setRGB(xp1, ym1, Color.RED.getRGB());
 
-                       buf.setRGB(xm1, yy, java.awt.Color.RED.getRGB());
-                       buf.setRGB(xp1, yy, java.awt.Color.RED.getRGB());
+                       buf.setRGB(xm1, yy, Color.RED.getRGB());
+                       buf.setRGB(xp1, yy, Color.RED.getRGB());
 
-                       buf.setRGB(xm1, yp1, java.awt.Color.RED.getRGB());
-                       buf.setRGB(xx, yp1, java.awt.Color.RED.getRGB());
-                       buf.setRGB(xp1, yp1, java.awt.Color.RED.getRGB());
-                       buf.setRGB(xx, yy, java.awt.Color.WHITE.getRGB());
-                        turpleColor[0] = 1.0;
-                        turpleColor[1] = 1.0;
-                        turpleColor[2] = 1.0;
+                       buf.setRGB(xm1, yp1, Color.RED.getRGB());
+                       buf.setRGB(xx, yp1, Color.RED.getRGB());
+                       buf.setRGB(xp1, yp1, Color.RED.getRGB());
+
+                       buf.setRGB(xx, yy, Color.WHITE.getRGB());
+                        actualCelluleColor = Color.WHITE;
                         cellule = false;
                         isChange = true;
                     }
                 }
                 if( !isChange && neighbours == 3){ // create cellule
                     if(!cellule){
-                        turpleColor[0] = randomDouble();//startingColor[0];
-                        turpleColor[1] = randomDouble();//startingColor[1];
-                        turpleColor[2] = randomDouble();//startingColor[2];
-                        cellule = (!(turpleColor[0] ==1.0 && turpleColor[1] == 1.0 && turpleColor[2] == 1.0 )? true: false);
-                        int colorStatusTmp =  getRGBint(turpleColor);
-                       buf.setRGB( xx, yy, colorStatusTmp);
+                        Color colorStatusTmp = new Color(randomInt(), randomInt(), randomInt());//startingColor[2];
+                        cellule = (colorStatusTmp.getRGB() != Color.WHITE.getRGB());
+                        buf.setRGB( xx, yy, colorStatusTmp.getRGB());
                     }
                 }else{
                     if(cellule
                             && !isChange
                             && (neighbours <2 || neighbours >3)){
-
-                        turpleColor[0] = 1.0;
-                        turpleColor[1] = 1.0;
-                        turpleColor[2] = 1.0;
-                        int colorStatusTmp =  getRGBint(turpleColor);
-                       buf.setRGB( xx, yy,  colorStatusTmp);
+                        buf.setRGB( xx, yy, Color.WHITE.getRGB());
                         cellule = false;
                         isChange = true;
                     }
@@ -174,25 +165,25 @@ public class GameCanvas extends Canvas {
                 isChange = false;
 //vieillissement
                 if(cellule){
+                    int[] turpleColor = getRGBCode(xx, yy);
                     if(turpleColor[0] > 0)
-                        turpleColor[0] -=fading;
+                        turpleColor[0] -= fading;
                     if(turpleColor[0] < 0)
-                        turpleColor[0] =0.0;
+                        turpleColor[0] = 0 ;
                     if(turpleColor[0] == 0){
                         if(turpleColor[1] > 0)
-                            turpleColor[1] -=fading;
+                            turpleColor[1] -= fading;
                         if(turpleColor[1] < 0)
-                            turpleColor[1] =0.0;
+                            turpleColor[1] = 0;
                         if(turpleColor[1] == 0){
                             if(turpleColor[2] > 0)
-                                turpleColor[2] -=fading;
+                                turpleColor[2] -= fading;
                             if(turpleColor[2] < 0)
-                                turpleColor[2] =0.0;
+                                turpleColor[2] = 0;
                         }
                     }
+                    buf.setRGB( xx, yy, new java.awt.Color(turpleColor[0], turpleColor[1], turpleColor[2]).getRGB());
                 }
-                int colorStatusTmp =  getRGBint(turpleColor);
-                    buf.setRGB( xx, yy, colorStatusTmp);
             }
         }
         if (buf == null) {
@@ -204,61 +195,79 @@ public class GameCanvas extends Canvas {
         setScaleX(scale);
         setScaleY(scale);
     }
-    private double[] incColorWithoutWhite(double[] turpleColor){
-        if(turpleColor[0] <1.0-fading)
-            turpleColor[0] +=fading;
-        if(turpleColor[0] > 1.0-fading)
-            turpleColor[0] = 1.0-fading;
-        if(turpleColor[0] == 1.0-fading){
-            if(turpleColor[1]  <1.0-fading)
-                turpleColor[1] +=fading;
-            if(turpleColor[1] > 1.0-fading)
-                turpleColor[1] = 1.0-fading;
-            if(turpleColor[1] == 1.0-fading){
-                if(turpleColor[2]  <1.0-fading)
-                    turpleColor[2] +=fading;
-             //   if(turpleColor[2] > 1.0-fading)
-            }
-        }
-        return turpleColor;
+
+    public void drawing(int x, int y, Color color){
+        buf.setRGB(x,y,color.getRGB());
+        gc.drawImage( SwingFXUtils.toFXImage(buf, null),0,0);
     }
 
-    private int getNeighbourValue(WritableImage snp, int neighbours, boolean cellule, double[] turpleColor, int xm, int ym, int xx, int yy) {
+    private java.awt.Color getColor(int xx, int yy) {
+        java.awt.Color actualCelluleColor = new java.awt.Color(buf.getRGB(xx, yy));
+        return actualCelluleColor;
+    }
 
-        Color color = snp.getPixelReader().getColor(xm, ym);
 
-            if(turpleColor[0] == 0.0 &&turpleColor[1] == 0.0 && turpleColor[2] == 0.0){
+    private int[] getRGBCode(int xx, int yy) {
+        int clr = buf.getRGB(xx, yy);
+        return new int[]{(clr & 0x00ff0000) >> 16, (clr & 0x0000ff00) >> 8, clr & 0x000000ff};
+    }
+    private int[] getRGBCode(java.awt.Color color) {
+        return new int[]{color.getRed(), color.getGreen(), color.getBlue()};
+    }
+
+    private int incColorWithoutWhite(java.awt.Color color){
+        int[] turpleColor = getRGBCode(color);
+        if(turpleColor[0] <255-fading)
+            turpleColor[0] +=fading;
+        if(turpleColor[0] > 255-fading)
+            turpleColor[0] = 255-fading;
+        if(turpleColor[0] == 255-fading){
+            if(turpleColor[1]  <255-fading)
+                turpleColor[1] +=fading;
+            if(turpleColor[1] > 255-fading)
+                turpleColor[1] = 255-fading;
+            if(turpleColor[1] == 255-fading){
+                if(turpleColor[2]  <254-fading)
+                    turpleColor[2] +=fading;
+                if(turpleColor[2] > 254-fading)
+                    turpleColor[2] = 254-fading;
+            }
+        }
+        return new java.awt.Color(turpleColor[0], turpleColor[1], turpleColor[2]).getRGB();
+    }
+
+    private int getNeighbourValue(BufferedImage buf, int neighbours, boolean cellule, java.awt.Color actualCelluleColor, int xm, int ym, int xx, int yy) {
+
+        java.awt.Color color = getColor(xm, ym);
+
+//classic
+//        if(color.getRGB() != Color.white.getRGB() )
+//            neighbours++;
+        //burn paper
+            if(actualCelluleColor.getRGB() == Color.BLACK.getRGB()){
                 int xm1 = xx-1;
                 if(xm1 < 0 )
                     xm1 = x-1;
                 int xp1 = xx+1;
                 if(xp1 >= x)
                     xp1 = 0;
-                Color colorTest = snp.getPixelReader().getColor(xp1, yy);
-                if(colorTest != Color.WHITE)
+                java.awt.Color colorTest = getColor(xp1, yy);
+                if(colorTest != java.awt.Color.WHITE)
                     neighbours++;
-                snp.getPixelWriter().setColor(xp1, yy, getRandomNewColor());
-                colorTest = snp.getPixelReader().getColor(xm1, yy);
-                if(colorTest != Color.WHITE)
+                buf.setRGB(xp1, yy, getRandomNewColor().getRGB());
+                colorTest = getColor(xm1, yy);
+                if(colorTest.getRGB() != java.awt.Color.WHITE.getRGB())
                     neighbours++;
-                snp.getPixelWriter().setColor(xm1, yy, getRandomNewColor());
-                snp.getPixelWriter().setColor(xx, yy, Color.WHITE);
+                buf.setRGB(xm1, yy, getRandomNewColor().getRGB());
+                buf.setRGB(xx, yy, java.awt.Color.WHITE.getRGB());
             }else
-                if(color.getRed() < 1.0 || color.getGreen() < 1.0 || color.getBlue() < 1.0  )
+                if(color.getRGB() != Color.WHITE.getRGB())
                     neighbours++;
-
         return neighbours;
     }
 
-    private Color getRandomNewColor() {
-        return new Color((Math.random()*(0.5)),(Math.random()*(0.5)),(Math.random()*(0.999999)),1.0);
-    }
-    
-    private int getRGBint(double[] turpletColor){
-        java.awt.Color color = new java.awt.Color((int)( turpletColor[0] * 255),
-                (int)( turpletColor[1] * 255),
-                (int)( turpletColor[2] * 255));
-        return color.getRGB();
+    private java.awt.Color getRandomNewColor() {
+        return new java.awt.Color((int)(Math.random()*127), (int)(Math.random()*127), (int)(Math.random()*254));
     }
 }
 

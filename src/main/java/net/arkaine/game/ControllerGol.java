@@ -9,7 +9,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
+import java.awt.Color;
 import net.arkaine.game.component.GameCanvas;
 
 import java.util.ArrayList;
@@ -100,14 +100,14 @@ public class ControllerGol {
         if(mouseEvent.isPrimaryButtonDown()) {
             int x = (int)Math.round(mouseEvent.getX());
             int y = (int)Math.round(mouseEvent.getY());
-            Color selectedColor = new Color(0.0,0.0,1.0,1.0);
+            Color selectedColor = new Color(0,0,255);
             if(colorComboBox.getSelectionModel().getSelectedItem() != null){
-                List<Double> colorDouble = new ArrayList<>();
+                List<Integer> colorInt = new ArrayList<>();
                 Arrays.stream(colorComboBox.getSelectionModel().getSelectedItem().split(","))
-                        .forEach(v ->  colorDouble.add(Double.parseDouble(v)));
-                selectedColor = new Color(colorDouble.get(0), colorDouble.get(1), colorDouble.get(2),1.0);
+                        .forEach(v ->  colorInt.add(Integer.parseInt(v)));
+                selectedColor = new Color(colorInt.get(0), colorInt.get(1), colorInt.get(2));
             }
-            gameofLife.getGraphicsContext2D().getPixelWriter().setColor(x, y, selectedColor);
+            gameofLife.drawing(x,y,selectedColor);
         }
     }
 }
